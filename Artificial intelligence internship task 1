@@ -1,0 +1,78 @@
+# Simulated dataset of conversations
+conversation_data = [
+    {"input": "Hi", "intent": "greeting"},
+    {"input": "Hello", "intent": "greeting"},
+    {"input": "How are you?", "intent": "wellness_check"},
+    {"input": "What's the weather today?", "intent": "weather_query"},
+    {"input": "Tell me a joke.", "intent": "joke_request"},
+    {"input": "Bye", "intent": "farewell"}
+]
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import string
+
+# Ensure necessary packages are downloaded
+nltk.download('punkt')
+nltk.download('stopwords')
+
+def preprocess_text(text):
+    # Lowercase
+    text = text.lower()
+    # Remove punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    # Tokenize
+    tokens = word_tokenize(text)
+    # Remove stopwords
+    tokens = [word for word in tokens if word not in stopwords.words('english')]
+    return tokens
+
+# Example usage:
+preprocessed_input = preprocess_text("Hi! How are you?")
+print(preprocessed_input)  # Output: ['hi', 'weather']
+def recognize_intent(user_input):
+    user_input_tokens = preprocess_text(user_input)
+    
+    # Simple keyword matching for intent recognition
+    if 'hi' in user_input_tokens or 'hello' in user_input_tokens:
+        return "greeting"
+    elif 'weather' in user_input_tokens:
+        return "weather_query"
+    elif 'joke' in user_input_tokens:
+        return "joke_request"
+    elif 'bye' in user_input_tokens:
+        return "farewell"
+    else:
+        return "unknown_intent"
+
+# Example usage:
+intent = recognize_intent("Tell me a joke!")
+print(f"Recognized Intent: {intent}")  # Output: joke_request
+def generate_response(intent):
+    # Predefined responses based on intent
+    responses = {
+        "greeting": "Hello! How can I help you today?",
+        "weather_query": "It looks sunny today!",
+        "joke_request": "Why don't scientists trust atoms? Because they make up everything!",
+        "farewell": "Goodbye! Have a great day!",
+        "unknown_intent": "I'm not sure how to respond to that."
+    }
+    return responses.get(intent, "Sorry, I don't understand that.")
+
+# Example usage:
+response = generate_response(intent)
+print(f"Bot Response: {response}")
+def chatbot():
+    print("Chatbot: Hello! Type 'exit' to stop.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "exit":
+            print("Chatbot: Goodbye!")
+            break
+        
+        intent = recognize_intent(user_input)
+        response = generate_response(intent)
+        print(f"Chatbot: {response}")
+
+# Run the chatbot
+chatbot()
