@@ -1,0 +1,104 @@
+# Assuming you have video data, you can use OpenCV to extract frames from videos
+import cv2
+
+def extract_frames(video_path, save_dir):
+    cap = cv2.VideoCapture(video_path)
+    frame_count = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame_count += 1
+        cv2.imwrite(f"{save_dir}/frame_{frame_count}.jpg", frame)
+    cap.release()
+
+# Example usage:
+extract_frames('path_to_video.mp4', 'output_frames_directory')
+import cv2
+
+def draw_bounding_box(image_path, box_coordinates):
+    # Load image
+    image = cv2.imread(image_path)
+    # box_coordinates = (startX, startY, endX, endY)
+    startX, startY, endX, endY = box_coordinates
+    # Draw rectangle (bounding box)
+    cv2.rectangle(image, (startX, startY), (endX, endY), (0, 255, 0), 2)
+    # Display image with bounding box
+    cv2.imshow("Image", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+# Example usage:
+draw_bounding_box("sample_frame.jpg", (50, 50, 200, 200))
+git clone https://github.com/ultralytics/yolov5
+cd yolov5
+pip install -r requirements.txt
+import torch
+
+# Load the pre-trained YOLOv5 model (e.g., YOLOv5s, YOLOv5m, YOLOv5l, YOLOv5x)
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+python train.py --img 640 --batch 16 --epochs 30 --data 'path_to_your_dataset_config.yaml' --weights yolov5s.pt
+import cv2
+import torch
+
+# Load the pre-trained YOLOv5 model
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+
+# Open video stream (can be a file or webcam)
+cap = cv2.VideoCapture(0)  # '0' for webcam; you can also use a file path
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Run inference on the frame
+    results = model(frame)
+    
+    # Display results on the frame
+    frame_with_boxes = results.render()[0]
+    cv2.imshow("YOLOv5 Object Detection", frame_with_boxes)
+
+    # Exit on 'q' key press
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+import cv2
+
+# Initialize the tracker
+tracker = cv2.TrackerCSRT_create()
+
+# Read the first frame of the video
+cap = cv2.VideoCapture('path_to_video.mp4')
+ret, frame = cap.read()
+
+# Define a bounding box around the object you want to track (can use results from object detection)
+bbox = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair=True)
+
+# Initialize tracker with the first frame and bounding box
+tracker.init(frame, bbox)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Update the tracker for the new frame
+    success, bbox = tracker.update(frame)
+
+    # Draw the bounding box on the frame if tracking is successful
+    if success:
+        (x, y, w, h) = [int(v) for v in bbox]
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    # Display the frame with the tracking box
+    cv2.imshow("Object Tracking", frame)
+
+    # Exit on 'q' key press
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
